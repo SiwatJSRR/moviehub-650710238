@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getMovies } from '../api/tmdb';
 import { Link } from 'react-router-dom';
 import FeaturedCarousel from '../components/FeaturedCarousel';
-import { movies as localMovies } from '../data/data';
 // TODO ขั้นที่ 5: import { useEffect } from 'react' และ import { getMovies } from '../api/tmdb'
 
 const STEPS = [
@@ -13,6 +13,8 @@ const STEPS = [
   { n: 6, file: 'docs/api-wishlist.md', what: 'กรอกรายการ API ที่จะขอจากทีม Backend' },
 ];
 
+
+
 // สลับลำดับแบบสุ่มบนสำเนา ไม่แตะ array เดิม
 function shuffle(list) {
   const copy = [...list];
@@ -23,10 +25,18 @@ function shuffle(list) {
   return copy;
 }
 
+
 function Home() {
-  // สุ่มครั้งเดียวตอน component เกิด แล้วจำไว้ใน state (กดเลื่อนแล้วลำดับไม่เปลี่ยน)
-  // TODO ขั้นที่ 5: เปลี่ยนเป็น useState([]) แล้วใช้ useEffect เรียก getMovies() แล้ว setPicks(shuffle(list))
-  const [picks, setPicks] = useState(() => shuffle(localMovies));
+  const [picks, setPicks] = useState([]);   // เริ่มว่าง รอข้อมูลจาก API แล้วค่อยสุ่ม
+
+  useEffect(() => {
+    let ignore = false;
+    getMovies()
+      .then(list => { if (!ignore) setPicks(shuffle(list)); })
+      .catch(() => { if (!ignore) setPicks([]); });   // พลาดก็แค่ไม่มีหนังแนะนำ หน้าแรกไม่ควรพัง
+    return () => { ignore = true; };
+  }, []);
+
 
   return (
     <div className="mx-auto max-w-5xl px-4 md:px-6">
