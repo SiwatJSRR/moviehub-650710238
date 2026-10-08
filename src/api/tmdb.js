@@ -15,7 +15,7 @@ export async function getJSON(path, params = {}) {
     url.searchParams.set(name, value);               // เข้ารหัสภาษาไทยและช่องว่างให้เอง
   }
 
-    const res = await fetch(url);                      // รอครั้งที่ 1: รอ server ตอบ
+  const res = await fetch(url);                      // รอครั้งที่ 1: รอ server ตอบ
   if (!res.ok) {
     throw new Error(`TMDB ตอบกลับ ${res.status}`);   // 401 key ผิด, 404 ไม่มีของ ฯลฯ
   }
